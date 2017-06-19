@@ -18,7 +18,7 @@ public class CommandListener implements IListener<MessageReceivedEvent> {
 
 	@Override
 	public void handle(MessageReceivedEvent event) {
-		if(System.currentTimeMillis() - lastCommand < 1000) return;
+		if(System.currentTimeMillis() - lastCommand < 1500) return;
 		if(event.getMessage().getContent().startsWith("!")){
 			String[] parts = event.getMessage().getContent().substring(1).split(" ");
 			if(commands.containsKey(parts[0])){

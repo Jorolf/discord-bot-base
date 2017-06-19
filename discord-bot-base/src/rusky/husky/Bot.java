@@ -10,13 +10,13 @@ import sx.blah.discord.api.IDiscordClient;
 public class Bot {
 	private CommandListener listener;
 	
-	public Bot(String[] args){
+	public Bot(String token){
 		listener = new CommandListener();
 
 		IDiscordClient client;
-		if(args.length >= 1)
+		if(token != null)
 			client = new ClientBuilder()
-			.withToken(args[0])
+			.withToken(token)
 			.build();
 		else
 			client = new ClientBuilder()

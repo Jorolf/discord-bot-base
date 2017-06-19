@@ -8,12 +8,12 @@ import rusky.husky.CommandArgs;
 
 public class ExampleBot extends Bot {
 
-	public ExampleBot(String[] args) {
-		super(args);
+	public ExampleBot(String token) {
+		super(token);
 	}
 
 	public static void main(String[] args) {
-		ExampleBot bot = new ExampleBot(args);
+		ExampleBot bot = new ExampleBot(args.length > 0 ? args[0] : null);
 
 		bot.addCommand("roll", new Roll());
 	}
