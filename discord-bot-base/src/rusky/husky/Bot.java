@@ -9,11 +9,11 @@ import sx.blah.discord.api.IDiscordClient;
 
 public class Bot {
 	private CommandListener listener;
+	private IDiscordClient client;
 	
-	public Bot(String token){
-		listener = new CommandListener();
-
-		IDiscordClient client;
+	public Bot(String token, String prefix){
+		listener = new CommandListener(prefix);
+		
 		if(token != null)
 			client = new ClientBuilder()
 			.withToken(token)
@@ -25,9 +25,20 @@ public class Bot {
 		
 		client.getDispatcher().registerListener(listener);
 		client.login();
+		
+		while(!client.isReady())
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 	}
 	
 	public void addCommand(String name, Consumer<CommandArgs> command){
 		listener.addCommand(name, command);
+	}
+	
+	public IDiscordClient getDiscordClient(){
+		return client;
 	}
 }
