@@ -1,5 +1,8 @@
 package rusky.husky;
 
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -48,14 +51,30 @@ public class CommandListener implements IListener<MessageReceivedEvent> {
 									event.getAuthor(), event.getChannel()));
 				} catch (Exception e) {
 					e.printStackTrace();
-					event.getClient().getApplicationOwner().getOrCreatePMChannel()
-							.sendMessage(event.getAuthor() + " managed to throw an exception in "
-									+ event.getGuild().getName() + "#" + event.getChannel().getName()
-									+ "!\nStacktrace: ");
-					if (!e.getMessage().isEmpty())
-						event.getClient().getApplicationOwner().getOrCreatePMChannel().sendMessage(e.getMessage());
-					for (StackTraceElement element : e.getStackTrace())
-						event.getClient().getApplicationOwner().getOrCreatePMChannel().sendMessage(element.toString());
+					event.getClient().getApplicationOwner().getOrCreatePMChannel().sendMessage(event.getAuthor() + " managed to create an exception in " + (event.getGuild() != null ? event.getGuild().getName() + event.getChannel().mention() : "his PM channel!"));
+					try(Writer w = new Writer() {
+						private String s = "```\n";
+						
+						@Override
+						public void write(char[] cbuf, int off, int len) throws IOException {
+							s += String.copyValueOf(cbuf, off, len);
+						}
+						
+						@Override
+						public void flush() throws IOException {
+							for(String message : (s + "\n```").split("(?<=\\G.{2000})"))
+								event.getClient().getApplicationOwner().getOrCreatePMChannel().sendMessage(message);
+						}
+						
+						@Override
+						public void close() throws IOException {
+							flush();
+						}
+					}){
+						e.printStackTrace(new PrintWriter(w));
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
 				}
 				lastCommand.put(event.getChannel(), System.currentTimeMillis());
 				fastMessage.put(event.getChannel(), true);
